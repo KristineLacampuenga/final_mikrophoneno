@@ -196,7 +196,7 @@ canvas {
     }
     .container { padding: 10px; }
     .controls { gap: 30px; }
-    input[type="range"] { height: 290px; }
+    input[type="range"] { height: 250px; }
     canvas { height: 200px; }
 }
 
