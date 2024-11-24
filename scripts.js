@@ -14,6 +14,34 @@ let audioContext, analyser, gainNode, microphone, audioOutput;
 let dataArray, bufferLength;
 let isMuted = false;
 let pitchShifter;
+let bluetoothSpeakerDevice = null;  // Store the Bluetooth device
+
+// Bluetooth connection logic for a Bluetooth speaker
+const connectBluetoothSpeaker = async () => {
+    try {
+        console.log('Requesting Bluetooth device...');
+        // Request any Bluetooth device without specifying the service UUID
+        const device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true  // Allows for any Bluetooth device to be chosen
+        });
+
+        console.log(`Device selected: ${device.name}`);
+        bluetoothSpeakerDevice = device;
+
+        // Connect to the GATT server of the Bluetooth device
+        const server = await device.gatt.connect();
+        console.log('Connected to Bluetooth device.');
+        status.innerText = `Connected to Bluetooth Speaker: ${device.name}`;
+
+        // Example: Retrieve and log all available services from the Bluetooth device
+        const services = await server.getPrimaryServices();
+        console.log('Available services:', services);
+
+    } catch (error) {
+        console.error('Bluetooth connection failed:', error);
+        status.innerText = `Bluetooth Connection Failed: ${error.message}`;
+    }
+};
 
 class Jungle {
     constructor(context) {
@@ -162,32 +190,10 @@ muteButton.addEventListener('click', () => {
     muteButton.innerText = isMuted ? 'Unmute' : 'Mute';
 });
 
-// Connect to Bluetooth microphone
+// Connect to Bluetooth speaker
 connectBluetoothButton.addEventListener('click', async () => {
-    try {
-        const device = await navigator.bluetooth.requestDevice({
-            filters: [{ services: ['0000110A-0000-1000-8000-00805F9B34FB'] }] // A2DP UUID for audio service
-        });
-
-        const server = await device.gatt.connect();
-        const service = await server.getPrimaryService('0000110A-0000-1000-8000-00805F9B34FB'); // A2DP UUID for audio service
-        const characteristic = await service.getCharacteristic('00002A3D-0000-1000-8000-00805F9B34FB'); // Placeholder UUID for characteristic
-
-        characteristic.startNotifications();
-        characteristic.addEventListener('characteristicvaluechanged', handleBluetoothAudio);
-
-        status.innerText = 'Bluetooth Microphone Connected';
-    } catch (error) {
-        console.error('Bluetooth connection failed:', error);
-        status.innerText = 'Bluetooth Connection Failed';
-    }
+    await connectBluetoothSpeaker();
 });
-
-function handleBluetoothAudio(event) {
-    const value = event.target.value;
-    // Process the audio data here
-    console.log('Audio Data:', value); // Log the audio data for debugging
-}
 
 // Load saved settings
 const loadSettings = () => {
