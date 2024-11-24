@@ -91,7 +91,7 @@ button:hover {
     margin-top: 20px;
     display: flex;
     flex-direction: row;
-    gap: 60px;
+    gap: 20px;
     justify-content: center;
     width: 100%;
 }
@@ -103,7 +103,7 @@ button:hover {
 }
 
 input[type="range"] {
-    height: 30%;
+    height: 100px;
     width: 20px;
     margin: 5px 0;
     cursor: pointer;
