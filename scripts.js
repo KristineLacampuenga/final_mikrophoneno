@@ -1,6 +1,7 @@
 const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
 const muteButton = document.getElementById('muteButton');
+const echoButton = document.getElementById('echoButton');
 const volumeControl = document.getElementById('volumeControl');
 const pitchControl = document.getElementById('pitchControl');
 const volumePercentage = document.getElementById('volumePercentage');
@@ -13,8 +14,10 @@ let audioContext, analyser, gainNode, microphone, audioOutput;
 let dataArray, bufferLength;
 let isMuted = false;
 let pitchShifter;
+let echoEnabled = false;
+let echoGainNode, echoDelayNode;
+let bassFilter, midFilter, trebleFilter;
 
-// Jungle class for pitch shifting and audio processing
 class Jungle {
     constructor(context) {
         this.context = context;
@@ -23,34 +26,25 @@ class Jungle {
         this.modulationNode = context.createGain();
         this.delayNode = context.createDelay();
 
-        // Configure initial values
-        this.delayNode.delayTime.value = 0.05; // Initial delay time
+        this.delayNode.delayTime.value = 0.05;
 
-        // Modulation for voice-changing effect (like robotic or AI-style)
         this.modulationOscillator = context.createOscillator();
         this.modulationOscillator.type = 'sine';
-        this.modulationOscillator.frequency.value = 0.1; // Modulation frequency for effect
+        this.modulationOscillator.frequency.value = 0.1;
         this.modulationOscillator.connect(this.modulationNode.gain);
 
-        // Connect nodes
         this.input.connect(this.delayNode);
         this.delayNode.connect(this.modulationNode);
         this.modulationNode.connect(this.output);
 
-        // Start the oscillator
         this.modulationOscillator.start();
     }
 
     setPitchOffset(offset) {
-        // Offset can be positive or negative to shift pitch up or down
-        this.modulationNode.gain.value = offset;
+        this.modulationNode.gain.value = offset * 2;
     }
 
-    // Example of adding more AI-like transformations (like formant shifting)
     applyAITransformations(inputBuffer) {
-        // For now, a simple example might involve pitch shift
-        // AI algorithms would be more complex here, and could use pretrained models
-        // For instance, you could send this buffer to an AI service for processing
         return inputBuffer;
     }
 }
@@ -60,6 +54,23 @@ const initializeVisualizer = async () => {
     analyser = audioContext.createAnalyser();
     gainNode = audioContext.createGain();
     pitchShifter = new Jungle(audioContext);
+
+    echoGainNode = audioContext.createGain();
+    echoDelayNode = audioContext.createDelay();
+    echoDelayNode.delayTime.value = 0.5;
+
+    bassFilter = audioContext.createBiquadFilter();
+    bassFilter.type = 'lowshelf';
+    bassFilter.frequency.value = 200;
+
+    midFilter = audioContext.createBiquadFilter();
+    midFilter.type = 'peaking';
+    midFilter.frequency.value = 1000;
+    midFilter.Q.value = 1;
+
+    trebleFilter = audioContext.createBiquadFilter();
+    trebleFilter.type = 'highshelf';
+    trebleFilter.frequency.value = 3000;
 
     audioOutput = audioContext.createMediaStreamDestination();
 
@@ -74,8 +85,15 @@ const initializeVisualizer = async () => {
             .connect(gainNode)
             .connect(pitchShifter.input)
             .connect(pitchShifter.output)
+            .connect(bassFilter)
+            .connect(midFilter)
+            .connect(trebleFilter)
             .connect(analyser)
             .connect(audioOutput);
+
+        if (echoEnabled) {
+            enableEcho();  // Ensure echo is enabled if it's already active
+        }
 
         const audioElement = new Audio();
         audioElement.srcObject = audioOutput.stream;
@@ -92,11 +110,18 @@ const visualize = () => {
     requestAnimationFrame(visualize);
     analyser.getByteTimeDomainData(dataArray);
 
-    canvasContext.fillStyle = 'white';
+    // Clear canvas with gradient background
+    canvasContext.fillStyle = 'black';
     canvasContext.fillRect(0, 0, visualizer.width, visualizer.height);
 
-    canvasContext.lineWidth = 2;
-    canvasContext.strokeStyle = 'purple';
+    // Gradient for waveform
+    const gradient = canvasContext.createLinearGradient(0, 0, visualizer.width, 0);
+    gradient.addColorStop(0, 'rgb(255, 0, 255)'); // Purple
+    gradient.addColorStop(0.5, 'rgb(0, 255, 255)'); // Cyan
+    gradient.addColorStop(1, 'rgb(255, 0, 255)'); // Purple
+
+    canvasContext.lineWidth = 3;
+    canvasContext.strokeStyle = gradient;
     canvasContext.beginPath();
 
     const sliceWidth = visualizer.width * 1.0 / bufferLength;
@@ -115,7 +140,16 @@ const visualize = () => {
         x += sliceWidth;
     }
 
-    canvasContext.lineTo(visualizer.width, visualizer.height / 2);
+    // Glow effect around the waveform
+    canvasContext.lineWidth = 6;
+    canvasContext.strokeStyle = 'rgba(255, 0, 255, 0.3)';
+    canvasContext.shadowColor = 'rgba(255, 0, 255, 0.7)';
+    canvasContext.shadowBlur = 10;
+    canvasContext.stroke();
+
+    // Main waveform stroke
+    canvasContext.lineWidth = 2;
+    canvasContext.strokeStyle = gradient;
     canvasContext.stroke();
 };
 
@@ -128,11 +162,37 @@ volumeControl.addEventListener('input', (event) => {
 
 // Pitch control
 pitchControl.addEventListener('input', (event) => {
-    const offset = event.target.value - 1; // Adjust based on slider range
-    pitchShifter.setPitchOffset(offset);
+    const offset = event.target.value;
+    pitchShifter.setPitchOffset((offset - 50) / 50); // Adjust to range -1 to 1
+    pitchPercentage.innerText = `${offset}%`;
+});
 
-    const pitchPercentageValue = Math.round(((event.target.value - 0.5) / 1.5) * 100);
-    pitchPercentage.innerText = `${pitchPercentageValue}%`;
+// Equalizer Controls
+const equalizerControls = {
+    bassControl: document.getElementById('bassControl'),
+    midControl: document.getElementById('midControl'),
+    trebleControl: document.getElementById('trebleControl'),
+    bassPercentage: document.getElementById('bassPercentage'),
+    midPercentage: document.getElementById('midPercentage'),
+    treblePercentage: document.getElementById('treblePercentage'),
+};
+
+equalizerControls.bassControl.addEventListener('input', (event) => {
+    const value = event.target.value;
+    bassFilter.gain.value = (value - 50) / 5; // Adjust to range -10 to 10
+    equalizerControls.bassPercentage.innerText = `${value}%`;
+});
+
+equalizerControls.midControl.addEventListener('input', (event) => {
+    const value = event.target.value;
+    midFilter.gain.value = (value - 50) / 5; // Adjust to range -10 to 10
+    equalizerControls.midPercentage.innerText = `${value}%`;
+});
+
+equalizerControls.trebleControl.addEventListener('input', (event) => {
+    const value = event.target.value;
+    trebleFilter.gain.value = (value - 50) / 5; // Adjust to range -10 to 10
+    equalizerControls.treblePercentage.innerText = `${value}%`;
 });
 
 // Start microphone
@@ -142,41 +202,46 @@ startButton.addEventListener('click', async () => {
     startButton.disabled = true;
     stopButton.disabled = false;
     muteButton.disabled = false;
+    echoButton.disabled = false;
 });
 
 // Stop microphone
 stopButton.addEventListener('click', () => {
-    if (audioContext) {
-        audioContext.close();
-        status.innerText = 'Microphone stopped.';
-        startButton.disabled = false;
-        stopButton.disabled = true;
-        muteButton.disabled = true;
-    }
-});
-
-// Mute/unmute microphone
-muteButton.addEventListener('click', () => {
-    isMuted = !isMuted;
-    gainNode.gain.value = isMuted ? 0 : volumeControl.value / 100;
-    muteButton.innerText = isMuted ? 'Unmute' : 'Mute';
-});
-
-// Load saved settings
-const loadSettings = () => {
-    const savedVolume = localStorage.getItem('volume');
-    const savedPitch = localStorage.getItem('pitch');
-
-    if (savedVolume) volumeControl.value = savedVolume;
-    if (savedPitch) pitchControl.value = savedPitch;
-
-    gainNode.gain.value = volumeControl.value / 100;
-    pitchShifter.setPitchOffset(pitchControl.value - 1);
-};
-
-window.addEventListener('load', () => {
-    loadSettings();
+    audioContext.close();
+    status.innerText = 'Microphone stopped.';
     startButton.disabled = false;
     stopButton.disabled = true;
     muteButton.disabled = true;
+    echoButton.disabled = true;
 });
+
+// Mute button
+muteButton.addEventListener('click', () => {
+    isMuted = !isMuted;
+    gainNode.gain.value = isMuted ? 0 : volumeControl.value / 100;
+    muteButton.innerText = isMuted ? '#ccc' : '#FF007A';
+});
+
+// Echo button
+echoButton.addEventListener('click', () => {
+    echoEnabled = !echoEnabled;
+
+    if (echoEnabled) {
+        enableEcho();
+    } else {
+        disableEcho();
+    }
+});
+
+// Enable echo
+const enableEcho = () => {
+    gainNode.connect(echoDelayNode);
+    echoDelayNode.connect(echoGainNode);
+    echoGainNode.connect(audioOutput);
+};
+
+// Disable echo
+const disableEcho = () => {
+    gainNode.disconnect(echoDelayNode);
+    echoDelayNode.disconnect(echoGainNode);
+};
