@@ -91,7 +91,7 @@ button:hover {
     margin-top: 20px;
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 60px;
     justify-content: center;
     width: 100%;
 }
@@ -103,7 +103,7 @@ button:hover {
 }
 
 input[type="range"] {
-    height: 100px;
+    height: 30%;
     width: 20px;
     margin: 5px 0;
     cursor: pointer;
@@ -165,35 +165,4 @@ canvas {
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-    body { padding: 20px; }
-    h1 { font-size: 1.5rem; }
-    .container { width: 100%; padding: 15px; }
-    button {
-        padding: 10px;
-        width: 60px;
-        height: 60px;
-        font-size: 1.2rem;
-    }
-    .controls {
-        flex-direction: column;
-        gap: 15px;
-    }
-    input[type="range"] { height: 150px; }
-    canvas { height: 180px; }
-}
 
-@media (max-width: 480px) {
-    h1 { font-size: 1.2rem; }
-    button {
-        padding: 8px;
-        width: 50px;
-        height: 50px;
-        font-size: 1rem;
-    }
-    .container { padding: 10px; }
-    .controls { gap: 10px; }
-    input[type="range"] { height: 100px; }
-    canvas { height: 150px; }
-}
