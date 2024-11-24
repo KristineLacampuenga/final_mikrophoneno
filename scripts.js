@@ -8,6 +8,7 @@ const pitchPercentage = document.getElementById('pitchPercentage');
 const status = document.getElementById('status');
 const visualizer = document.getElementById('visualizer');
 const canvasContext = visualizer.getContext('2d');
+const connectBluetoothButton = document.getElementById('connectBluetooth');
 
 let audioContext, analyser, gainNode, microphone, audioOutput;
 let dataArray, bufferLength;
@@ -21,10 +22,10 @@ class Jungle {
         this.output = context.createGain();
         this.modulationNode = context.createGain();
         this.delayNode = context.createDelay();
-        
+
         // Configure initial values
         this.delayNode.delayTime.value = 0.05; // Initial delay time
-        
+
         // Modulation for voice-changing effect (like robotic or AI-style)
         this.modulationOscillator = context.createOscillator();
         this.modulationOscillator.type = 'sine';
@@ -35,7 +36,7 @@ class Jungle {
         this.input.connect(this.delayNode);
         this.delayNode.connect(this.modulationNode);
         this.modulationNode.connect(this.output);
-        
+
         // Start the oscillator
         this.modulationOscillator.start();
     }
@@ -44,7 +45,7 @@ class Jungle {
         // Offset can be positive or negative to shift pitch up or down
         this.modulationNode.gain.value = offset;
     }
-    
+
     // Example of adding more AI-like transformations (like formant shifting)
     applyAITransformations(inputBuffer) {
         // For now, a simple example might involve pitch shift
@@ -82,6 +83,7 @@ const initializeVisualizer = async () => {
 
         visualize();
     } catch (error) {
+        console.error('Error accessing microphone:', error);
         status.innerText = `Error accessing microphone: ${error.message}`;
     }
 };
@@ -159,6 +161,33 @@ muteButton.addEventListener('click', () => {
     gainNode.gain.value = isMuted ? 0 : volumeControl.value / 100;
     muteButton.innerText = isMuted ? 'Unmute' : 'Mute';
 });
+
+// Connect to Bluetooth microphone
+connectBluetoothButton.addEventListener('click', async () => {
+    try {
+        const device = await navigator.bluetooth.requestDevice({
+            filters: [{ services: ['0000110A-0000-1000-8000-00805F9B34FB'] }] // A2DP UUID for audio service
+        });
+
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService('0000110A-0000-1000-8000-00805F9B34FB'); // A2DP UUID for audio service
+        const characteristic = await service.getCharacteristic('00002A3D-0000-1000-8000-00805F9B34FB'); // Placeholder UUID for characteristic
+
+        characteristic.startNotifications();
+        characteristic.addEventListener('characteristicvaluechanged', handleBluetoothAudio);
+
+        status.innerText = 'Bluetooth Microphone Connected';
+    } catch (error) {
+        console.error('Bluetooth connection failed:', error);
+        status.innerText = 'Bluetooth Connection Failed';
+    }
+});
+
+function handleBluetoothAudio(event) {
+    const value = event.target.value;
+    // Process the audio data here
+    console.log('Audio Data:', value); // Log the audio data for debugging
+}
 
 // Load saved settings
 const loadSettings = () => {
