@@ -98,7 +98,7 @@ button:hover {
 
 .control-group {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
 }
 
