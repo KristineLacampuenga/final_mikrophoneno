@@ -56,7 +56,10 @@ const initializeVisualizer = () => {
             gainNode.connect(audioOutput);
             visualize();
         })
-        .catch(error => console.error("Error accessing microphone:", error));
+        .catch(error => {
+            console.error("Error accessing microphone:", error);
+            status.innerText = `Microphone access error: ${error.message}`;
+        });
 };
 
 // Start the microphone
@@ -242,3 +245,4 @@ window.addEventListener('load', () => {
     status.innerText = 'Please connect your Bluetooth device first.';
     alert('Please click the "Connect Bluetooth" button to proceed.');
 });
+
