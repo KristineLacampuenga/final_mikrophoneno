@@ -242,4 +242,3 @@ window.addEventListener('load', () => {
     status.innerText = 'Please connect your Bluetooth device first.';
     alert('Please click the "Connect Bluetooth" button to proceed.');
 });
-
