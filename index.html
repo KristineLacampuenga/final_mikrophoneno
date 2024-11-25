@@ -11,14 +11,24 @@
 <body>
     <div class="container">
         <h1>MikroPHONEno</h1>
+        
         <!-- Start Microphone Button with Icon -->
-        <button id="startButton"><i class="fas fa-microphone"></i></button>
+        <button id="startButton"><i class="fas fa-microphone"></i> </button>
+        
         <!-- Stop Microphone Button with Icon -->
         <button id="stopButton" disabled><i class="fas fa-stop"></i></button>
+        
         <!-- Mute Button with Icon -->
         <button id="muteButton" disabled><i class="fas fa-volume-mute"></i></button>
+        
         <!-- Echo Button with Icon -->
         <button id="echoButton" disabled><i class="fas fa-volume-up"></i></button>
+        
+        <!-- Connect Bluetooth Button with Icon -->
+        <button id="connectBluetoothButton"><i class="fas fa-link"></i></button>
+        
+        <!-- Disconnect Bluetooth Button with Icon -->
+        <button id="disconnectBluetoothButton" disabled><i class="fas fa-unlink"></i></button>
 
         <div class="controls">
             <div class="control-group">
@@ -49,7 +59,7 @@
             </div>
         </div>
 
-        <p id="status"></p>
+        <p id="status">Status: Not connected</p>
         <canvas id="visualizer"></canvas>
     </div>
     <script src="scripts.js"></script>
