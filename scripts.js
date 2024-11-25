@@ -2,6 +2,7 @@ const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
 const muteButton = document.getElementById('muteButton');
 const echoButton = document.getElementById('echoButton');
+const clapButton = document.getElementById('clapButton');
 const volumeControl = document.getElementById('volumeControl');
 const pitchControl = document.getElementById('pitchControl');
 const volumePercentage = document.getElementById('volumePercentage');
@@ -17,6 +18,7 @@ let pitchShifter;
 let echoEnabled = false;
 let echoGainNode, echoDelayNode;
 let bassFilter, midFilter, trebleFilter;
+const clapSound = new Audio('clap.mp3'); // Define clap sound
 
 class Jungle {
     constructor(context) {
@@ -30,7 +32,7 @@ class Jungle {
 
         this.modulationOscillator = context.createOscillator();
         this.modulationOscillator.type = 'sine';
-        this.modulationOscillator.frequency.value = 0.1;
+        this.modulationOscillator.frequency.value = 20; // Higher frequency for chipmunk effect
         this.modulationOscillator.connect(this.modulationNode.gain);
 
         this.input.connect(this.delayNode);
@@ -41,7 +43,7 @@ class Jungle {
     }
 
     setPitchOffset(offset) {
-        this.modulationNode.gain.value = offset * 2;
+        this.modulationNode.gain.value = offset * 10; // Increase offset for higher pitch
     }
 
     applyAITransformations(inputBuffer) {
@@ -163,7 +165,7 @@ volumeControl.addEventListener('input', (event) => {
 // Pitch control
 pitchControl.addEventListener('input', (event) => {
     const offset = event.target.value;
-    pitchShifter.setPitchOffset((offset - 50) / 50); // Adjust to range -1 to 1
+    pitchShifter.setPitchOffset((offset - 50) / 10); // Adjust to range -5 to 5 for higher pitch
     pitchPercentage.innerText = `${offset}%`;
 });
 
@@ -203,6 +205,7 @@ startButton.addEventListener('click', async () => {
     stopButton.disabled = false;
     muteButton.disabled = false;
     echoButton.disabled = false;
+    clapButton.disabled = false;
 });
 
 // Stop microphone
@@ -213,13 +216,15 @@ stopButton.addEventListener('click', () => {
     stopButton.disabled = true;
     muteButton.disabled = true;
     echoButton.disabled = true;
+    clapButton.disabled = true;
+    stopClap(); // Stop clap sound when microphone stops
 });
 
 // Mute button
 muteButton.addEventListener('click', () => {
     isMuted = !isMuted;
     gainNode.gain.value = isMuted ? 0 : volumeControl.value / 100;
-    muteButton.innerText = isMuted ? '#ccc' : '#FF007A';
+    muteButton.innerText = isMuted ? 'Unmute' : 'Mute';
 });
 
 // Echo button
@@ -244,4 +249,20 @@ const enableEcho = () => {
 const disableEcho = () => {
     gainNode.disconnect(echoDelayNode);
     echoDelayNode.disconnect(echoGainNode);
+};
+
+
+// Clap sound
+clapButton.addEventListener('click', () => {
+    if (clapSound.paused) {
+        clapSound.play();
+    } else {
+        stopClap();
+    }
+});
+
+// Function to stop the clap sound
+const stopClap = () => {
+    clapSound.pause();
+    clapSound.currentTime = 0;
 };
