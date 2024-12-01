@@ -289,3 +289,4 @@ const vizualize = () => {
 window.addEventListener('load', () => {
     status.innerText = 'Ready to start your audio experience.';
 });
+
