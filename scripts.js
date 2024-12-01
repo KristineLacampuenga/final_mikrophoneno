@@ -2,7 +2,6 @@ const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
 const muteButton = document.getElementById('muteButton');
 const echoButton = document.getElementById('echoButton');
-const clapButton = document.getElementById('clapButton');
 const volumeControl = document.getElementById('volumeControl');
 const pitchControl = document.getElementById('pitchControl');
 const volumePercentage = document.getElementById('volumePercentage');
@@ -18,7 +17,6 @@ let pitchShifter;
 let echoEnabled = false;
 let echoGainNode, echoDelayNode;
 let bassFilter, midFilter, trebleFilter;
-const clapSound = new Audio('clap.mp3'); // Define clap sound
 
 class Jungle {
     constructor(context) {
@@ -32,7 +30,7 @@ class Jungle {
 
         this.modulationOscillator = context.createOscillator();
         this.modulationOscillator.type = 'sine';
-        this.modulationOscillator.frequency.value = 20; // Higher frequency for chipmunk effect
+        this.modulationOscillator.frequency.value = 10; // Higher frequency for chipmunk effect
         this.modulationOscillator.connect(this.modulationNode.gain);
 
         this.input.connect(this.delayNode);
@@ -43,7 +41,7 @@ class Jungle {
     }
 
     setPitchOffset(offset) {
-        this.modulationNode.gain.value = offset * 10; // Increase offset for higher pitch
+        this.modulationNode.gain.value = offset * 4; // Increase offset for higher pitch
     }
 
     applyAITransformations(inputBuffer) {
@@ -205,7 +203,6 @@ startButton.addEventListener('click', async () => {
     stopButton.disabled = false;
     muteButton.disabled = false;
     echoButton.disabled = false;
-    clapButton.disabled = false;
 });
 
 // Stop microphone
@@ -216,15 +213,13 @@ stopButton.addEventListener('click', () => {
     stopButton.disabled = true;
     muteButton.disabled = true;
     echoButton.disabled = true;
-    clapButton.disabled = true;
-    stopClap(); // Stop clap sound when microphone stops
 });
 
-// Mute button
+// Mute functionality
 muteButton.addEventListener('click', () => {
     isMuted = !isMuted;
     gainNode.gain.value = isMuted ? 0 : volumeControl.value / 100;
-    muteButton.innerText = isMuted ? 'Unmute' : 'Mute';
+    changeButtonColor(muteButton, isMuted ? 'red' : 'blue');  // Change color based on mute status
 });
 
 // Echo button
@@ -233,8 +228,10 @@ echoButton.addEventListener('click', () => {
 
     if (echoEnabled) {
         enableEcho();
+        echoButton.style.backgroundColor = 'yellow';  // Change color when echo is enabled
     } else {
         disableEcho();
+        echoButton.style.backgroundColor = 'blue';  // Change color when echo is disabled
     }
 });
 
@@ -249,20 +246,46 @@ const enableEcho = () => {
 const disableEcho = () => {
     gainNode.disconnect(echoDelayNode);
     echoDelayNode.disconnect(echoGainNode);
+    echoGainNode.disconnect(audioOutput);
 };
 
+// Function to change button color
+const changeButtonColor = (button, color) => {
+    button.style.backgroundColor = color;
+};
 
-// Clap sound
-clapButton.addEventListener('click', () => {
-    if (clapSound.paused) {
-        clapSound.play();
-    } else {
-        stopClap();
+// Visualizer function
+const vizualize = () => {
+    requestAnimationFrame(visualize);
+    analyser.getByteTimeDomainData(dataArray);
+    canvasContext.clearRect(0, 0, visualizer.width, visualizer.height);
+
+    // Create a gradient
+    const gradient = canvasContext.createLinearGradient(0, 0, visualizer.width, visualizer.height);
+    gradient.addColorStop(0, 'rgb(255, 0, 0)');
+    gradient.addColorStop(0.5, 'rgb(0, 255, 0)');
+    gradient.addColorStop(1, 'rgb(0, 0, 255)');
+    canvasContext.strokeStyle = gradient;
+
+    canvasContext.lineWidth = 2;
+    canvasContext.beginPath();
+    const sliceWidth = visualizer.width * 1.0 / bufferLength;
+    let x = 0;
+    for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = v * visualizer.height / 2;
+        if (i === 0) {
+            canvasContext.moveTo(x, y);
+        } else {
+            canvasContext.lineTo(x, y);
+        }
+        x += sliceWidth;
     }
-});
-
-// Function to stop the clap sound
-const stopClap = () => {
-    clapSound.pause();
-    clapSound.currentTime = 0;
+    canvasContext.lineTo(visualizer.width, visualizer.height / 2);
+    canvasContext.stroke();
 };
+
+// Automatically guide user on page load
+window.addEventListener('load', () => {
+    status.innerText = 'Ready to start your audio experience.';
+});
