@@ -30,7 +30,7 @@
 
             this.modulationOscillator = context.createOscillator();
             this.modulationOscillator.type = 'sine';
-            this.modulationOscillator.frequency.value = 10; // Higher frequency for chipmunk effect
+            this.modulationOscillator.frequency.value = 30; // Higher frequency for chipmunk effect
             this.modulationOscillator.connect(this.modulationNode.gain);
 
             this.input.connect(this.delayNode);
@@ -57,7 +57,7 @@
 
         echoGainNode = audioContext.createGain();
         echoDelayNode = audioContext.createDelay();
-        echoDelayNode.delayTime.value = 0.5;
+        echoDelayNode.delayTime.value = 0.2;
 
         bassFilter = audioContext.createBiquadFilter();
         bassFilter.type = 'lowshelf';
@@ -246,22 +246,22 @@ pitchControl.addEventListener('input', () => {
     pitchPercentage.innerText = Math.round(pitch * 100) + '%';  // Display pitch as a percentage
 });
 
-// Equalizer control updates - Invert the equalizer values like volume
+// Equalizer control updates - Amplify the effect by increasing the gain values
 bassControl.addEventListener('input', () => {
     const bassValue = 1 - bassControl.value / bassControl.max;  // Invert the bass slider value
-    bassFilter.gain.value = bassValue * 0.5;  // Adjust bass filter gain based on inverted value
+    bassFilter.gain.value = bassValue * 2;  // Amplify the bass effect (increase gain)
     bassPercentage.innerText = Math.round(bassValue * 100) + '%';  // Update the display percentage
 });
 
 midControl.addEventListener('input', () => {
     const midValue = 1 - midControl.value / midControl.max;  // Invert the mid slider value
-    midFilter.gain.value = midValue * 0.5;  // Adjust mid filter gain based on inverted value
+    midFilter.gain.value = midValue * 2;  // Amplify the mid effect (increase gain)
     midPercentage.innerText = Math.round(midValue * 100) + '%';  // Update the display percentage
 });
 
 trebleControl.addEventListener('input', () => {
     const trebleValue = 1 - trebleControl.value / trebleControl.max;  // Invert the treble slider value
-    trebleFilter.gain.value = trebleValue * 0.5;  // Adjust treble filter gain based on inverted value
+    trebleFilter.gain.value = trebleValue * 2;  // Amplify the treble effect (increase gain)
     treblePercentage.innerText = Math.round(trebleValue * 100) + '%';  // Update the display percentage
 });
 
