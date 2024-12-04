@@ -18,6 +18,7 @@ let echoEnabled = false;
 let echoGainNode, echoDelayNode;
 let bassFilter, midFilter, trebleFilter;
 
+// Class for pitch shifting modulation (Jungle effect)
 class Jungle {
     constructor(context) {
         this.context = context;
@@ -26,7 +27,7 @@ class Jungle {
         this.modulationNode = context.createGain();
         this.delayNode = context.createDelay();
 
-        this.delayNode.delayTime.value = 0.01;
+        this.delayNode.delayTime.value = 0.005; // Reduced delay time for a more natural effect
         this.modulationOscillator = context.createOscillator();
         this.modulationOscillator.type = 'sine';
         this.modulationOscillator.frequency.value = 60;
@@ -40,7 +41,7 @@ class Jungle {
     }
 
     setPitchOffset(offset) {
-        this.modulationNode.gain.value = offset * 10;
+        this.modulationNode.gain.value = offset * 10; // Increased gain for higher pitch shifting
     }
 
     applyAITransformations(inputBuffer) {
@@ -48,6 +49,7 @@ class Jungle {
     }
 }
 
+// Initialize the audio visualizer and processing setup
 const initializeVisualizer = async () => {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioContext.createAnalyser();
@@ -56,7 +58,7 @@ const initializeVisualizer = async () => {
 
     echoGainNode = audioContext.createGain();
     echoDelayNode = audioContext.createDelay();
-    echoDelayNode.delayTime.value = 0.2;
+    echoDelayNode.delayTime.value = 0.1; // Reduced delay for more subtle echo
 
     bassFilter = audioContext.createBiquadFilter();
     bassFilter.type = 'lowshelf';
@@ -124,6 +126,7 @@ const setAudioOutputToBluetooth = async (audioElement) => {
     }
 };
 
+// Visualize audio waveform
 const visualize = () => {
     requestAnimationFrame(visualize);
     analyser.getByteTimeDomainData(dataArray);
@@ -167,6 +170,7 @@ const visualize = () => {
     canvasContext.stroke();
 };
 
+// Start and stop button functionality
 startButton.addEventListener('click', async () => {
     await initializeVisualizer();
     status.innerText = 'Microphone is live...';
@@ -185,7 +189,7 @@ stopButton.addEventListener('click', () => {
     echoButton.disabled = true;
 });
 
-// Mute/Unmute functionality (with color change only)
+// Mute/Unmute functionality
 muteButton.addEventListener('click', () => {
     isMuted = !isMuted;
 
@@ -198,7 +202,7 @@ muteButton.addEventListener('click', () => {
     }
 });
 
-// Echo functionality (with color change only)
+// Echo functionality
 echoButton.addEventListener('click', () => {
     echoEnabled = !echoEnabled;
 
@@ -211,53 +215,34 @@ echoButton.addEventListener('click', () => {
     }
 });
 
-// Function to enable echo effect
+// Enable echo effect
 const enableEcho = () => {
-    echoGainNode.gain.value = 0.5;
+    echoGainNode.gain.value = 0.5; // Increased gain for echo effect
     gainNode.connect(echoDelayNode);
     echoDelayNode.connect(echoGainNode);
+    echoGainNode.connect(gainNode); // Feedback loop to create echo
     echoGainNode.connect(audioContext.destination);
-    status.innerText = 'ECHO';
+    status.innerText = 'ECHO ENABLED';
 };
 
-// Function to disable echo effect
+// Disable echo effect
 const disableEcho = () => {
     gainNode.disconnect(echoDelayNode);
+    echoDelayNode.disconnect(echoGainNode);
     echoGainNode.disconnect(audioContext.destination);
-    status.innerText = 'ECHO STOPPED';
+    status.innerText = 'ECHO DISABLED';
 };
 
-// Update the volume and pitch based on the reversed slider movement
+// Volume control
 volumeControl.addEventListener('input', () => {
-    const volume = 1 - volumeControl.value / volumeControl.max;
+    const volume = volumeControl.value / volumeControl.max;
     gainNode.gain.value = volume;
     volumePercentage.innerText = Math.round(volume * 100) + '%';
 });
 
+// Pitch control
 pitchControl.addEventListener('input', () => {
-    const pitch = 1 - pitchControl.value / pitchControl.max;
-    pitchShifter.setPitchOffset(pitch);
-    pitchPercentage.innerText = Math.round(pitch * 100) + '%';
+    const pitch = pitchControl.value / pitchControl.max;
+    pitchShifter.setPitchOffset(pitch * 2); // Increase the pitch shift range
+    pitchPercentage.innerText = Math.round(pitch * 200) + '%'; // Display updated percentage
 });
-
-// Equalizer control updates - Amplify the effect by increasing the gain values
-bassControl.addEventListener('input', () => {
-    const bassValue = 1 - bassControl.value / bassControl.max;
-    bassFilter.gain.value = bassValue * 2;
-    bassPercentage.innerText = Math.round(bassValue * 100) + '%';
-});
-
-midControl.addEventListener('input', () => {
-    const midValue = 1 - midControl.value / midControl.max;
-    midFilter.gain.value = midValue * 2;
-    midPercentage.innerText = Math.round(midValue * 100) + '%';
-});
-
-trebleControl.addEventListener('input', () => {
-    const trebleValue = 1 - trebleControl.value / trebleControl.max;
-    trebleFilter.gain.value = trebleValue * 2;
-    treblePercentage.innerText = Math.round(trebleValue * 100) + '%';
-});
-
-alert("How to make best, safe and without echo use of this microphone? \n1. Set volume to 50% \n2. Connect your device audio to external speaker. \n3. Tap the mic icon. \n4. Adjust volume levels as per your need.");
-    
