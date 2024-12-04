@@ -1,4 +1,4 @@
-const startButton = document.getElementById('startButton');
+   const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
     const muteButton = document.getElementById('muteButton');
     const echoButton = document.getElementById('echoButton');
