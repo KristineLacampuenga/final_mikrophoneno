@@ -19,8 +19,7 @@
         <button id="muteButton" disabled><i class="fas fa-volume-mute"></i></button>
         <!-- Echo Button with Icon -->
         <button id="echoButton" disabled><i class="fas fa-volume-up"></i></button>
-        <!-- Clap Sound Button with Icon -->
-  
+
         <div class="controls">
             <div class="control-group">
                 <input type="range" id="volumeControl" min="0" max="100" value="50">
@@ -32,27 +31,11 @@
                 <label for="pitchControl">Pitch</label>
                 <span id="pitchPercentage">50%</span>
             </div>
-            <!-- Equalizer Controls -->
-            <div class="control-group">
-                <input type="range" id="bassControl" min="0" max="100" value="50">
-                <label for="bassControl">Bass</label>
-                <span id="bassPercentage">50%</span>
-            </div>
-            <div class="control-group">
-                <input type="range" id="midControl" min="0" max="100" value="50">
-                <label for="midControl">Mid</label>
-                <span id="midPercentage">50%</span>
-            </div>
-            <div class="control-group">
-                <input type="range" id="trebleControl" min="0" max="100" value="50">
-                <label for="trebleControl">Treble</label>
-                <span id="treblePercentage">50%</span>
-            </div>
         </div>
 
         <p id="status"></p>
         <canvas id="visualizer"></canvas>
-    </div>
+
     <script src="scripts.js"></script>
 </body>
 </html>
