@@ -29,7 +29,7 @@ class Jungle {
         this.delayNode.delayTime.value = 0.01;
         this.modulationOscillator = context.createOscillator();
         this.modulationOscillator.type = 'sine';
-        this.modulationOscillator.frequency.value = 60; // Higher frequency for an even higher pitch effect
+        this.modulationOscillator.frequency.value = 60;
         this.modulationOscillator.connect(this.modulationNode.gain);
 
         this.input.connect(this.delayNode);
@@ -40,14 +40,13 @@ class Jungle {
     }
 
     setPitchOffset(offset) {
-        this.modulationNode.gain.value = offset * 10; // Increase offset for higher pitch
+        this.modulationNode.gain.value = offset * 10;
     }
 
     applyAITransformations(inputBuffer) {
         return inputBuffer;
     }
 }
-
 
 const initializeVisualizer = async () => {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -92,14 +91,13 @@ const initializeVisualizer = async () => {
             .connect(audioOutput);
 
         if (echoEnabled) {
-            enableEcho();  // Ensure echo is enabled if it's already active
+            enableEcho();
         }
 
         const audioElement = new Audio();
         audioElement.srcObject = audioOutput.stream;
         audioElement.play();
 
-        // Attempt to route audio to Bluetooth if available
         await setAudioOutputToBluetooth(audioElement);
 
         visualize();
@@ -113,10 +111,9 @@ const initializeVisualizer = async () => {
 const setAudioOutputToBluetooth = async (audioElement) => {
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
-        const bluetoothDevice = devices.find(device => device.kind === 'audiooutput' && device.deviceId.includes('bluetooth'));
+        const bluetoothDevice = devices.find(device => device.kind === 'audiooutput' && device.label.includes('Bluetooth'));
 
         if (bluetoothDevice) {
-            // Set the output device to Bluetooth
             await audioElement.setSinkId(bluetoothDevice.deviceId);
             console.log('Audio output set to Bluetooth:', bluetoothDevice);
         } else {
@@ -131,15 +128,13 @@ const visualize = () => {
     requestAnimationFrame(visualize);
     analyser.getByteTimeDomainData(dataArray);
 
-    // Clear canvas with gradient background
     canvasContext.fillStyle = 'black';
     canvasContext.fillRect(0, 0, visualizer.width, visualizer.height);
 
-    // Gradient for waveform
     const gradient = canvasContext.createLinearGradient(0, 0, visualizer.width, 0);
-    gradient.addColorStop(0, 'rgb(255, 0, 255)'); // Purple
-    gradient.addColorStop(0.5, 'rgb(0, 255, 255)'); // Cyan
-    gradient.addColorStop(1, 'rgb(255, 0, 255)'); // Purple
+    gradient.addColorStop(0, 'rgb(255, 0, 255)');
+    gradient.addColorStop(0.5, 'rgb(0, 255, 255)');
+    gradient.addColorStop(1, 'rgb(255, 0, 255)');
 
     canvasContext.lineWidth = 3;
     canvasContext.strokeStyle = gradient;
@@ -161,14 +156,12 @@ const visualize = () => {
         x += sliceWidth;
     }
 
-    // Glow effect around the waveform
     canvasContext.lineWidth = 6;
     canvasContext.strokeStyle = 'rgba(255, 0, 255, 0.3)';
     canvasContext.shadowColor = 'rgba(255, 0, 255, 0.7)';
     canvasContext.shadowBlur = 10;
     canvasContext.stroke();
 
-    // Main waveform stroke
     canvasContext.lineWidth = 2;
     canvasContext.strokeStyle = gradient;
     canvasContext.stroke();
@@ -194,33 +187,33 @@ stopButton.addEventListener('click', () => {
 
 // Mute/Unmute functionality (with color change only)
 muteButton.addEventListener('click', () => {
-    isMuted = !isMuted;  // Toggle mute state
+    isMuted = !isMuted;
 
     if (isMuted) {
-        gainNode.gain.value = 0;  // Mute the audio
-        muteButton.style.backgroundColor = '#888';  // Change button color to indicate muted state
+        gainNode.gain.value = 0;
+        muteButton.style.backgroundColor = '#888';
     } else {
-        gainNode.gain.value = 1;  // Unmute the audio
-        muteButton.style.backgroundColor = '#FF6347';  // Restore original color (or a different color)
+        gainNode.gain.value = 1;
+        muteButton.style.backgroundColor = '#FF6347';
     }
 });
 
 // Echo functionality (with color change only)
 echoButton.addEventListener('click', () => {
-    echoEnabled = !echoEnabled;  // Toggle echo state
+    echoEnabled = !echoEnabled;
 
     if (echoEnabled) {
-        enableEcho();  // Enable echo effect
-        echoButton.style.backgroundColor = '#32CD32';  // Change button color to indicate echo is enabled
+        enableEcho();
+        echoButton.style.backgroundColor = '#32CD32';
     } else {
-        disableEcho();  // Disable echo effect
-        echoButton.style.backgroundColor = '#FF6347';  // Restore button color to indicate echo is disabled
+        disableEcho();
+        echoButton.style.backgroundColor = '#FF6347';
     }
 });
 
 // Function to enable echo effect
 const enableEcho = () => {
-    echoGainNode.gain.value = 0.5;  // Set echo gain level (adjust as needed)
+    echoGainNode.gain.value = 0.5;
     gainNode.connect(echoDelayNode);
     echoDelayNode.connect(echoGainNode);
     echoGainNode.connect(audioContext.destination);
@@ -229,42 +222,42 @@ const enableEcho = () => {
 
 // Function to disable echo effect
 const disableEcho = () => {
-    gainNode.disconnect(echoDelayNode);  // Disconnect echo effect from the signal path
+    gainNode.disconnect(echoDelayNode);
     echoGainNode.disconnect(audioContext.destination);
     status.innerText = 'ECHO STOPPED';
 };
 
 // Update the volume and pitch based on the reversed slider movement
 volumeControl.addEventListener('input', () => {
-    const volume = 1 - volumeControl.value / volumeControl.max;  // Invert the volume
-    gainNode.gain.value = volume;  // Set volume to the inverted value
-    volumePercentage.innerText = Math.round(volume * 100) + '%';  // Display volume as a percentage
+    const volume = 1 - volumeControl.value / volumeControl.max;
+    gainNode.gain.value = volume;
+    volumePercentage.innerText = Math.round(volume * 100) + '%';
 });
 
 pitchControl.addEventListener('input', () => {
-    const pitch = 1 - pitchControl.value / pitchControl.max;  // Invert the pitch
-    pitchShifter.setPitchOffset(pitch);  // Apply the inverted pitch offset
-    pitchPercentage.innerText = Math.round(pitch * 100) + '%';  // Display pitch as a percentage
+    const pitch = 1 - pitchControl.value / pitchControl.max;
+    pitchShifter.setPitchOffset(pitch);
+    pitchPercentage.innerText = Math.round(pitch * 100) + '%';
 });
-
 
 // Equalizer control updates - Amplify the effect by increasing the gain values
 bassControl.addEventListener('input', () => {
-    const bassValue = 1 - bassControl.value / bassControl.max;  // Invert the bass slider value
-    bassFilter.gain.value = bassValue * 2;  // Amplify the bass effect (increase gain)
-    bassPercentage.innerText = Math.round(bassValue * 100) + '%';  // Update the display percentage
+    const bassValue = 1 - bassControl.value / bassControl.max;
+    bassFilter.gain.value = bassValue * 2;
+    bassPercentage.innerText = Math.round(bassValue * 100) + '%';
 });
 
 midControl.addEventListener('input', () => {
-    const midValue = 1 - midControl.value / midControl.max;  // Invert the mid slider value
-    midFilter.gain.value = midValue * 2;  // Amplify the mid effect (increase gain)
-    midPercentage.innerText = Math.round(midValue * 100) + '%';  // Update the display percentage
+    const midValue = 1 - midControl.value / midControl.max;
+    midFilter.gain.value = midValue * 2;
+    midPercentage.innerText = Math.round(midValue * 100) + '%';
 });
 
 trebleControl.addEventListener('input', () => {
-    const trebleValue = 1 - trebleControl.value / trebleControl.max;  // Invert the treble slider value
-    trebleFilter.gain.value = trebleValue * 2;  // Amplify the treble effect (increase gain)
-    treblePercentage.innerText = Math.round(trebleValue * 100) + '%';  // Update the display percentage
+    const trebleValue = 1 - trebleControl.value / trebleControl.max;
+    trebleFilter.gain.value = trebleValue * 2;
+    treblePercentage.innerText = Math.round(trebleValue * 100) + '%';
 });
 
 alert("How to make best, safe and without echo use of this microphone? \n1. Set volume to 50% \n2. Connect your device audio to external speaker. \n3. Tap the mic icon. \n4. Adjust volume levels as per your need.");
+    
