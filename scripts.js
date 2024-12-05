@@ -16,7 +16,6 @@ let isMuted = false;
 let pitchShifter;
 let echoEnabled = false;
 let echoGainNode, echoDelayNode;
-let bassFilter, midFilter, trebleFilter;
 
 // Class for pitch shifting modulation (Jungle effect)
 class Jungle {
@@ -217,7 +216,7 @@ echoButton.addEventListener('click', () => {
 
 // Enable echo effect
 const enableEcho = () => {
-    echoGainNode.gain.value = 0.5; // Increased gain for echo effect
+    echoGainNode.gain.value = 0.7; // Increased gain for echo effect
     gainNode.connect(echoDelayNode);
     echoDelayNode.connect(echoGainNode);
     echoGainNode.connect(gainNode); // Feedback loop to create echo
@@ -243,6 +242,6 @@ volumeControl.addEventListener('input', () => {
 // Pitch control
 pitchControl.addEventListener('input', () => {
     const pitch = pitchControl.value / pitchControl.max;
-    pitchShifter.setPitchOffset(pitch * 2); // Increase the pitch shift range
-    pitchPercentage.innerText = Math.round(pitch * 200) + '%'; // Display updated percentage
+    pitchShifter.setPitchOffset(pitch * 3); // Increase the pitch shift range
+    pitchPercentage.innerText = Math.round(pitch * 100) + '%'; // Display updated percentage
 });
