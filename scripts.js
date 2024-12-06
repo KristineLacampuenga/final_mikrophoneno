@@ -1,7 +1,8 @@
 const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
-const muteButton = document.getElementById('muteButton');
 const echoButton = document.getElementById('echoButton');
+const recordButton = document.getElementById('recordButton');
+const playbackButton = document.getElementById('playbackButton');
 const volumeControl = document.getElementById('volumeControl');
 const pitchControl = document.getElementById('pitchControl');
 const volumePercentage = document.getElementById('volumePercentage');
@@ -10,9 +11,8 @@ const status = document.getElementById('status');
 const visualizer = document.getElementById('visualizer');
 const canvasContext = visualizer.getContext('2d');
 
-let audioContext, analyser, gainNode, microphone, audioOutput;
-let dataArray, bufferLength;
-let isMuted = false;
+let audioContext, analyser, gainNode, microphone, audioOutput, mediaRecorder;
+let dataArray, bufferLength, recordedChunks = [];
 let pitchShifter;
 let echoEnabled = false;
 let echoGainNode, echoDelayNode;
@@ -91,13 +91,30 @@ const initializeVisualizer = async () => {
             .connect(analyser)
             .connect(audioOutput);
 
-        if (echoEnabled) {
-            enableEcho();
-        }
-
         const audioElement = new Audio();
         audioElement.srcObject = audioOutput.stream;
         audioElement.play();
+
+        // Initialize MediaRecorder
+        mediaRecorder = new MediaRecorder(audioOutput.stream);
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+            recordedChunks = [];
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            audio.play();
+
+            // Automatic download
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.setAttribute('download', 'recording.webm');
+            downloadLink.click();
+        };
 
         await setAudioOutputToBluetooth(audioElement);
 
@@ -175,8 +192,9 @@ startButton.addEventListener('click', async () => {
     status.innerText = 'Microphone is live...';
     startButton.disabled = true;
     stopButton.disabled = false;
-    muteButton.disabled = false;
     echoButton.disabled = false;
+    recordButton.disabled = false;
+    playbackButton.disabled = true; // Initially disabled until recording is done
 });
 
 stopButton.addEventListener('click', () => {
@@ -184,21 +202,9 @@ stopButton.addEventListener('click', () => {
     status.innerText = 'Microphone stopped.';
     startButton.disabled = false;
     stopButton.disabled = true;
-    muteButton.disabled = true;
     echoButton.disabled = true;
-});
-
-// Mute/Unmute functionality
-muteButton.addEventListener('click', () => {
-    isMuted = !isMuted;
-
-    if (isMuted) {
-        gainNode.gain.value = 0;
-        muteButton.style.backgroundColor = '#888';
-    } else {
-        gainNode.gain.value = 1;
-        muteButton.style.backgroundColor = '#FF6347';
-    }
+    recordButton.disabled = true;
+    playbackButton.disabled = true;
 });
 
 // Echo functionality
@@ -216,12 +222,12 @@ echoButton.addEventListener('click', () => {
 
 // Enable echo effect
 const enableEcho = () => {
-    echoGainNode.gain.value = 0.7; // Increased gain for echo effect
+    echoGainNode.gain.value = 0.5; // Increased gain for echo effect
     gainNode.connect(echoDelayNode);
     echoDelayNode.connect(echoGainNode);
     echoGainNode.connect(gainNode); // Feedback loop to create echo
     echoGainNode.connect(audioContext.destination);
-    status.innerText = 'ECHO ENABLED';
+    status.innerText = 'Echo Enabled...';
 };
 
 // Disable echo effect
@@ -229,7 +235,7 @@ const disableEcho = () => {
     gainNode.disconnect(echoDelayNode);
     echoDelayNode.disconnect(echoGainNode);
     echoGainNode.disconnect(audioContext.destination);
-    status.innerText = 'ECHO DISABLED';
+    status.innerText = 'Echo Disabled...';
 };
 
 // Volume control
@@ -245,5 +251,19 @@ pitchControl.addEventListener('input', () => {
     pitchShifter.setPitchOffset(pitch * 3); // Increase the pitch shift range
     pitchPercentage.innerText = Math.round(pitch * 100) + '%'; // Display updated percentage
 });
-alert("How to make best, safe use of this microphone? \n1. Set volume to 20% \n2. Connect your device audio to external speaker. \n3. Tap the mic icon. \n4. Adjust volume levels as per your need.\n5. You can record while mic is live 'Click record button'\n and auto matic download to your device.);
+
+// Record functionality
+recordButton.addEventListener('click', () => {
+    if (mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        recordButton.style.backgroundColor = '#FF6347';
+        playbackButton.disabled = false;
+        status.innerText = 'Recording stopped.';
+    } else {
+        mediaRecorder.start();
+        recordButton.style.backgroundColor = '#32CD32';
+        playbackButton.disabled = true;
+        status.innerText = 'Recording...';
+    }
+});
 
