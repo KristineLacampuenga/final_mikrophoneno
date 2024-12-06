@@ -245,3 +245,5 @@ pitchControl.addEventListener('input', () => {
     pitchShifter.setPitchOffset(pitch * 3); // Increase the pitch shift range
     pitchPercentage.innerText = Math.round(pitch * 100) + '%'; // Display updated percentage
 });
+alert("How to make best, safe use of this microphone? \n1. Set volume to 20% \n2. Connect your device audio to external speaker. \n3. Tap the mic icon. \n4. Adjust volume levels as per your need.\n5. You can record while mic is live 'Click record button'\n and auto matic download to your device.);
+
