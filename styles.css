@@ -99,6 +99,9 @@ button:hover {
 #echoButton { background: radial-gradient(circle at 30% 30%, #ffcc99, #ff6600 60%); }
 #stopButton { background: radial-gradient(circle at 30% 30%, #ac0909, #ff0066 60%); }
 #startButton { background: radial-gradient(circle at 30% 30%, #33ccff, #ff99cc 60%); }
+#recordButton { background: radial-gradient(circle at 30% 30%, #fdf912, #0ada1b 60%); }
+#playbackButton { background: radial-gradient(circle at 30% 30%, #d608a3, #350132 60%); }
+
 
 /* Controls */
 .controls {
