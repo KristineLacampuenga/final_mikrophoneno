@@ -11,7 +11,7 @@ body {
     height: 100vh;
     margin: 0;
     overflow: hidden;
-    position: relative; /* Added for overlay positioning */
+    position: relative; 
 }
 
 body::before {
