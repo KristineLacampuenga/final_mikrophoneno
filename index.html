@@ -5,42 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Microphone Web App</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Link to Font Awesome for icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <h1>
-            <img src="icon-1.png" alt="Icon" class="title-icon">
-            MikroPHONEno
+            <img src="icon-1.png" alt="Icon" class="title-icon"> 
         </h1>
-        <!-- Start Microphone Button with Icon -->
-        <button id="startButton"><i class="fas fa-microphone"></i></button>
-        <!-- Stop Microphone Button with Icon -->
-        <button id="stopButton" disabled><i class="fas fa-volume-mute"></i></button>
-        <!-- Echo Button with Icon -->
-        <button id="echoButton" disabled><i class="fas fa-volume-up"></i></button>
-        <!-- Record Button with Icon -->
-        <button id="recordButton" disabled><i class="fas fa-record-vinyl"></i></button>
-        <!-- Playback Button with Icon -->
-        <button id="playbackButton" disabled><i class="fas fa-play"></i></button>
 
-        <div class="controls">
-            <div class="control-group">
-                <input type="range" id="volumeControl" min="0" max="100" value="20">
-                <label for="volumeControl">Volume</label>
-                <span id="volumePercentage">20%</span>
-            </div>
-            <div class="control-group">
-                <input type="range" id="pitchControl" min="0" max="100" step="1" value="10">
-                <label for="pitchControl">Pitch</label>
-                <span id="pitchPercentage">10%</span>
-            </div>
+        <!-- Microphone Button -->
+        <button id="toggleButton" class="icon-btn">
+            <img src="realmic3.png" alt="Microphone Icon" class="microphone-btn">
+        </button>
+
+        <!-- Status Text Below the Mic Button -->
+        <p id="status">Status: Ready</p>
+
+        <!-- Buttons for Recording and Playback -->
+        <div class="control-btn">
+            <button id="recordButton">
+                <i class='fa fa-stop-circle' style='color:red'></i>
+                <span id="recordTimer">Start Recording</span>
+            </button>
+            <button id="playbackButton" disabled>
+                <i class="fa fa-step-backward" style="color:red"></i>
+                Playback Recording
+            </button>
         </div>
 
-        <p id="status"></p>
-        <canvas id="visualizer"></canvas>
+        <!-- Controls for Volume and Echo -->
+        <div class="controls">
+            <!-- Vertical Slider for Volume -->
+            <div class="control-group">
+                <label for="volumeControl">Volume</label>
+                <input type="range" id="volumeControl" min="0" max="100" value="0" orient="vertical">
+                <span id="volumePercentage">0%</span>
+            </div>
+
+            <!-- Vertical Slider for Echo -->
+            <div class="control-group">
+                <label for="echoControl">Echo</label>
+                <input type="range" id="echoControl" min="0" max="100" value="0" orient="vertical">
+                <span id="echoPercentage">0%</span>
+            </div>
+        </div>
     </div>
+
     <script src="scripts.js"></script>
 </body>
 </html>

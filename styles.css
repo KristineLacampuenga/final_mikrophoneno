@@ -1,252 +1,296 @@
-/* Basic Styling */
+/* Body styling */
 body {
-    font-family: 'Baskerville', serif;
-    background: url('building.jpg') no-repeat center center fixed;
+    background-image: url('building.jpg');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
-    color: white;
-    margin: 0;
-    padding: 0;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    position: relative; /* Added for overlay positioning */
+}
+
+/* Maroon overlay */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(128, 0, 0, 0.5); /* Maroon color with 50% opacity */
+    z-index: 1; /* Ensure overlay is above the background but below content */
+}
+
+/* Container styling */
+.container {
     text-align: center;
-    transition: background-color 0.3s ease;
+    background-color: rgba(249, 242, 213, 0.87); /* Changed background color to #f9f2d5 */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 25px; /* Reduced padding */
+    width: 400px; /* Reduced width */
+    max-width: 90%;
+    border: 5px solid #876741; /* Added border with color #876741 */
+    position: relative; /* Added for content positioning */
+    z-index: 2; /* Ensure content is above the overlay */
 }
 
+/* Heading styling */
 h1 {
-    color: #fff;
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
-    animation: textAnimation 3s ease-in-out infinite;
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
+    font-size: 1.9em; /* Slightly smaller font size */
+    margin-bottom: 15px;
+    color: #ffffff;
 }
 
+/* Title Icon styling */
 .title-icon {
-    width: 75px; 
-    height: 75px; 
-    margin-bottom: 10px; 
+    width: 80px; /* Slightly smaller icon size */
+    height: 80px;
+    margin-right: 10px;
+    vertical-align: middle;
     border-radius: 50%;
     padding: 5px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    border: 5px solid #876741; /* Added border with color #876741 */
 }
 
-
-@keyframes textAnimation {
-    0%, 100% { 
-        transform: scale(1); 
-        background-image: linear-gradient(to right, #ff007a, #fff); 
-        -webkit-background-clip: text;
-        color: transparent;
-    }
-    50% { 
-        transform: scale(1.1); 
-        background-image: linear-gradient(to right, #fff, #fad711); 
-        -webkit-background-clip: text;
-        color: transparent;
-    }
-}
-
-.animated-text {
-    font-size: 40px;
-    font-weight: bold;
-    display: inline-block;
-    animation: textAnimation 3s ease-in-out infinite;
-}
-
-/* Container */
-.container {
-    width: 90%;
-    max-width: 500px;
-    height: 80vh; 
-    padding: 40px; 
-    border-radius: 20px;
-    background-color: rgba(0, 0, 0, 0.377);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.281);
-    backdrop-filter: blur(15px);
-    transition: box-shadow 0.3s ease-in-out;
-}
-
-.container:hover {
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
-}
-
-
-/* Button Styles */
-button {
-    padding: 10px;
-    margin: 8px; 
-    font-size: 1rem; 
-    background-color: #FF007A;
-    color: white;
+/* Center the microphone button */
+#toggleButton {
+    background-color: transparent;
     border: none;
-    border-radius: 50%;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s, color 0.3s;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px; 
-    height: 60px; 
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    background: radial-gradient(circle at 30% 30%, #FF007A, #D10069 60%);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3);
-}
-
-button:hover {
-    background-color: #D10069;
-    transform: scale(1.1);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.5);
-    color: #FF00FF;
-}
-
-/* Specific button styles */
-#muteButton { background: radial-gradient(circle at 30% 30%, #daf736, #009933 60%); }
-#echoButton { background: radial-gradient(circle at 30% 30%, #ffcc99, #ff6600 60%); }
-#stopButton { background: radial-gradient(circle at 30% 30%, #ac0909, #ff0066 60%); }
-#startButton { background: radial-gradient(circle at 30% 30%, #33ccff, #ff99cc 60%); }
-#recordButton { background: radial-gradient(circle at 30% 30%, #fdf912, #0ada1b 60%); }
-#playbackButton { background: radial-gradient(circle at 30% 30%, #d608a3, #350132 60%); }
-
-
-/* Controls */
-.controls {
-    margin-top: 60px;
     display: flex;
-    flex-direction: row;
-    gap: 60px;
     justify-content: center;
-    width: 100%;
-}
-
-.control-group {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    margin: 0 auto;
+    margin-bottom: 30px;
+    padding: 0;
 }
 
-/* Enhanced 3D Circular Slider */
-input[type="range"] {
-    width: 220px;
-    height: 15px;
-    margin: 10px 0;
+.microphone-btn {
+    width: 160px; /* Slightly smaller button size */
+    height: auto;
+}
+
+/* Control buttons container */
+.control-btn {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Reduced gap */
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 18px; /* Slightly smaller padding */
+    font-size: 1em;
     cursor: pointer;
-    appearance: none;
-    background-color: #ddd;
-    border-radius: 25px;
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4), 0 4px 10px rgba(0, 0, 0, 0.2); 
-    position: relative;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+    background-color: #f0f0f0;
+    border: none;
+    color: #333;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-radius: 5px;
+    width: 150px; /* Slightly smaller width */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-input[type="range"]:focus {
-    outline: none;
-    background-color: #bbb;
+button:disabled {
+    background-color: #d3d3d3;
+    cursor: not-allowed;
+}
+
+#recordButton {
+    background-color: #4CAF50;
+}
+
+#playbackButton {
+    background-color: #4CAF50;
+}
+
+button:hover:not(:disabled) {
+    opacity: 0.8;
     transform: scale(1.05);
 }
 
-input[type="range"]::-webkit-slider-runnable-track {
-    height: 8px;
-    background: linear-gradient(135deg, #ff007a, #ff005c);
-    border-radius: 25px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5); 
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    height: 40px; 
-    width: 40px;
-    background: #FF007A;
-    border-radius: 50%; 
-    border: 2px solid #fff;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.6), 0px 8px 20px rgba(0, 0, 0, 0.4); 
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-    transform-origin: center center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6); 
-}
-
-input[type="range"]:hover::-webkit-slider-thumb {
-    background-color: #D10069;
-    transform: scale(1.3);
-    box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.8), 0px 10px 20px rgba(0, 0, 0, 0.6); 
-}
-
-input[type="range"]:active::-webkit-slider-thumb {
-    transform: scale(1.4);
-    box-shadow: 0px 20px 35px rgba(0, 0, 0, 0.9), 0px 15px 30px rgba(0, 0, 0, 0.7);
-}
-
-/* Volume and pitch percentage text */
-.control-group label, .control-group span {
-    font-size: 1rem;
-    color: white;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* Visualizer */
-.visualizer-container {
-    margin-top: 30px;
+/* Controls container */
+.controls {
     display: flex;
-    justify-content: center;
+    flex-direction: row; /* Arrange elements horizontally */
+    justify-content: center; /* Center elements horizontally */
+    align-items: center; /* Align elements vertically */
+    gap: 20px; /* Reduced gap */
+    margin-top: 20px;
+}
+
+/* Control group styling */
+.control-group {
+    display: flex;
+    flex-direction: column; /* Stack labels and sliders vertically */
     align-items: center;
-    perspective: 1000px; 
+    gap: 10px; /* Space between the slider and label/percentage */
+    flex: 1; /* Allow sliders to take equal width */
 }
 
-canvas {
-    width: 100%;
-    height: 250px;
-    margin-top: 30px;
-    border: 4px solid #FF007A;
-    border-radius: 15px;
-    background-color: rgba(0, 0, 0, 0.8);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), 0 0 50px rgba(255, 0, 122, 0.8); 
-    transform: rotateX(5deg) rotateY(5deg); 
-    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+/* Ensure slider elements have a defined width and height for vertical alignment */
+.control-group input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px; /* Width for vertical slider */
+    height: 200px; /* Height for vertical slider */
+    background: #800000; /* Maroon background color */
+    outline: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
 }
 
-/* Hover Effect: Enhancing studio-like feel */
-canvas:hover {
-    transform: rotateX(0deg) rotateY(0deg) scale(1.05);
-    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.7), 0 0 70px rgba(255, 0, 122, 1);
+/* Vertical slider with writing-mode */
+.control-group input[type="range"][orient="vertical"] {
+    writing-mode: vertical-lr; /* Make the slider vertical */
+    direction: rtl; /* Reverse the slider direction */
+    height: 200px; /* Ensure height is set */
+    margin-bottom: 10px;
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 750px) {
-    body { padding: 20px; }
-    h1 { font-size: 1.8rem; }
-    .container { width: 100%; padding: 20px; }
-    button {
-        padding: 12px;
-        width: 70px;
-        height: 70px;
-        font-size: 1.2rem;
+/* Slider hover effect */
+.control-group input[type="range"]:hover {
+    background-color: #550000; /* Darker maroon on hover */
+}
+
+/* Slider focus effect */
+.control-group input[type="range"]:focus {
+    background-color: #3d0000; /* Even darker maroon on focus */
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+/* Thumb styling for sliders */
+.control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    background: #800000; /* Maroon thumb color */
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+/* Thumb hover effect */
+.control-group input[type="range"]::-webkit-slider-thumb:hover {
+    background-color: #550000; /* Darker maroon on hover */
+    transform: scale(1.1);
+}
+
+/* Thumb active effect */
+.control-group input[type="range"]::-webkit-slider-thumb:active {
+    background-color: #3d0000; /* Even darker maroon on active */
+}
+
+/* Label styling */
+label {
+    font-size: 1.2em;
+    margin-top: 10px;
+    display: block;
+    color: #070707;
+}
+
+/* Volume and Echo percentage display */
+#volumePercentage, #echoPercentage {
+    font-size: 1em;
+    color: #070707;
+    text-align: center;
+}
+
+/* Status text */
+#status {
+    font-size: 1.2em;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #070707;
+    font-weight: bold;
+}
+
+/* For tablets and small screens */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px; /* Reduced padding on smaller screens */
+        width: 100%; /* Ensure full-width container */
     }
+
+    h1 {
+        font-size: 1.6em; /* Smaller title on smaller screens */
+    }
+
+    .microphone-btn {
+        width: 130px; /* Adjust microphone button size */
+    }
+
+    .control-btn {
+        flex-direction: row; /* Arrange control buttons side by side */
+        gap: 10px; /* Less gap between buttons */
+    }
+
+    button {
+        width: auto; /* Allow buttons to take necessary space */
+        padding: 8px 12px; /* Slightly smaller padding */
+    }
+
     .controls {
-        flex-direction: row;
-        gap: 30px;
+        width: 100%; /* Make controls take full width */
+        justify-content: space-evenly; /* Distribute controls evenly */
     }
-    input[type="range"] { width: 200px; }
-    canvas { height: 200px; }
+
+    .control-group input[type="range"] {
+        width: 15%; /* Even thinner slider */
+        height: 4px; /* Reduce height to make the slider thinner */
+    }
+
+    .title-icon {
+        width: 60px; /* Slightly smaller icon size */
+        height: 60px;
+    }
 }
 
+/* For very small screens */
 @media (max-width: 480px) {
-    h1 { font-size: 1.4rem; }
-    button {
-        padding: 10px;
-        width: 60px;
-        height: 60px;
-        font-size: 1rem;
+    h1 {
+        font-size: 1.3em; /* Smaller title for very small screens */
     }
-    .container { padding: 15px; }
-    .controls { gap: 20px; }
-    input[type="range"] { width: 150px; }
-    canvas { height: 200px;}
+
+    .container {
+        padding: 10px; /* Further reduced padding */
+    }
+
+    .microphone-btn {
+        width: 100px; /* Smaller microphone button */
+    }
+
+    button {
+        width: 100%; /* Full width buttons */
+        padding: 6px 8px; /* Smaller button padding */
+    }
+
+    .controls {
+        gap: 8px; /* Smaller gap for very small screens */
+        flex-direction: row; /* Arrange controls beside each other */
+        justify-content: space-evenly; /* Distribute controls evenly */
+    }
+
+    .control-group input[type="range"] {
+        width: 10%; /* Much thinner slider */
+        height: 2px; /* Even thinner slider */
+    }
+
+    .title-icon {
+        width: 50px; /* Smaller icon size for very small screens */
+        height: 50px;
+    }
 }
