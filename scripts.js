@@ -17,8 +17,8 @@ let recordingTimer, secondsElapsed = 0;
 const initializeMicrophone = async () => {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     gainNode = audioContext.createGain();
-    delayNode = audioContext.createDelay(5.0); // Delay with maximum of 5 seconds
-    delayNode.delayTime.value = 0;  // Start with no echo
+    delayNode = audioContext.createDelay(5.0); 
+    delayNode.delayTime.value = 0; 
     
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -42,11 +42,11 @@ const initializeMicrophone = async () => {
             playbackButton.disabled = false;
             status.innerText = 'Recording stopped. Playback is available.';
             
-            // Create a download link
+            
             const downloadLink = document.createElement('a');
             downloadLink.href = audioUrl;
-            downloadLink.download = 'recording.wav';  // Set the filename
-            downloadLink.click();  // Automatically trigger the download
+            downloadLink.download = 'recording.wav';  
+            downloadLink.click();  
         };
         
         status.innerText = 'Microphone initialized!';
@@ -62,7 +62,7 @@ toggleButton.addEventListener('click', async () => {
         await initializeMicrophone();
         status.innerText = 'Microphone is live...';
         
-        // Change to active mic image
+        
         toggleButton.innerHTML = '<img src="realmic3.png" alt="Microphone" class="microphone-btn">';
     } else {
         audioContext.close();
@@ -71,10 +71,10 @@ toggleButton.addEventListener('click', async () => {
         recordedChunks = [];
         status.innerText = 'Microphone stopped.';
         
-        // Change to muted mic image
+        
         toggleButton.innerHTML = '<img src="realmic4.png" alt="Muted Microphone" class="microphone-btn">';
     }
-    recordButton.disabled = !audioContext; // Enable/Disable record button based on microphone status
+    recordButton.disabled = !audioContext; 
 });
 
 // Volume control functionality
@@ -95,19 +95,19 @@ echoControl.addEventListener('input', () => {
 recordButton.addEventListener('click', () => {
     if (isRecording) {
         mediaRecorder.stop();
-        clearInterval(recordingTimer); // Stop the timer
+        clearInterval(recordingTimer); 
         status.innerText = `Recording stopped at ${formatTime(secondsElapsed)}.`;
-        secondsElapsed = 0; // Reset timer
+        secondsElapsed = 0; 
         recordButton.innerHTML = '<i class="fa fa-stop-circle" style="color:red"></i> <span id="recordTimer">Start Recording</span>';
-        recordButton.style.backgroundColor = '';  // Reset background color
+        recordButton.style.backgroundColor = ''; 
     } else {
         recordedChunks = [];
         mediaRecorder.start();
         status.innerText = 'Recording started...';
         recordButton.innerHTML = '<i class="fas fa-record-vinyl"></i> <span id="recordTimer">00:00:00</span>';
-        recordButton.style.backgroundColor = 'red';  // Turn the button red when recording
+        recordButton.style.backgroundColor = 'red';  
         
-        // Start the timer and update the button's innerHTML with the current time
+        
         recordingTimer = setInterval(() => {
             secondsElapsed++;
             const formattedTime = formatTime(secondsElapsed);
@@ -122,9 +122,9 @@ playbackButton.addEventListener('click', () => {
     if (audio) {
         audio.play();
         status.innerText = 'Playing back the recording...';
-        playbackButton.style.backgroundColor = 'red';  // Turn the button red during playback
+        playbackButton.style.backgroundColor = 'red'; 
         audio.onended = () => {
-            playbackButton.style.backgroundColor = '';  // Reset button color after playback
+            playbackButton.style.backgroundColor = ''; 
             status.innerText = 'Playback finished.';
         };
     } else {
