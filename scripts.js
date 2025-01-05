@@ -8,7 +8,7 @@ const echoControl = document.getElementById('echoControl');
 const echoPercentage = document.getElementById('echoPercentage');
 const status = document.getElementById('status');
 
-let audioContext, gainNode, microphone, lowpassFilter, highpassFilter, mediaRecorder, recordedChunks = [];
+let audioContext, gainNode, microphone, delayNode, mediaRecorder, recordedChunks = [];
 let isRecording = false;
 let audioUrl, audio;
 let recordingTimer, secondsElapsed = 0;
@@ -16,23 +16,39 @@ let recordingTimer, secondsElapsed = 0;
 const initializeMicrophone = async () => {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     gainNode = audioContext.createGain();
+    delayNode = audioContext.createDelay(5.0);
+    delayNode.delayTime.value = 0;
 
-    // Create filters
-    lowpassFilter = audioContext.createBiquadFilter();
-    lowpassFilter.type = 'lowpass';
-    lowpassFilter.frequency.value = 20000; // Adjust frequency as needed
+    // High-pass filter to remove low-frequency noise
+    const highPassFilter = audioContext.createBiquadFilter();
+    highPassFilter.type = 'highpass';
+    highPassFilter.frequency.value = 300;
 
-    highpassFilter = audioContext.createBiquadFilter();
-    highpassFilter.type = 'highpass';
-    highpassFilter.frequency.value = 20; // Adjust frequency as needed
+    // Low-pass filter to remove high-frequency noise
+    const lowPassFilter = audioContext.createBiquadFilter();
+    lowPassFilter.type = 'lowpass';
+    lowPassFilter.frequency.value = 3000;
+
+    // Compressor for automatic gain control
+    const compressor = audioContext.createDynamicsCompressor();
+    compressor.threshold.setValueAtTime(-50, audioContext.currentTime);
+    compressor.knee.setValueAtTime(40, audioContext.currentTime);
+    compressor.ratio.setValueAtTime(12, audioContext.currentTime);
+    compressor.attack.setValueAtTime(0.003, audioContext.currentTime);
+    compressor.release.setValueAtTime(0.25, audioContext.currentTime);
 
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         microphone = audioContext.createMediaStreamSource(stream);
-        microphone.connect(gainNode);
-        gainNode.connect(lowpassFilter);
-        lowpassFilter.connect(highpassFilter);
-        highpassFilter.connect(audioContext.destination);
+
+        // Connect audio nodes
+        microphone
+            .connect(highPassFilter)
+            .connect(lowPassFilter)
+            .connect(gainNode)
+            .connect(compressor)
+            .connect(delayNode)
+            .connect(audioContext.destination);
 
         mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.ondataavailable = event => recordedChunks.push(event.data);
@@ -49,7 +65,7 @@ const initializeMicrophone = async () => {
             downloadLink.click();
         };
 
-        status.innerText = 'Microphone initialized!';
+        status.innerText = 'Microphone initialized with noise reduction!';
     } catch (error) {
         console.error('Error accessing microphone:', error);
         status.innerText = `Error accessing microphone: ${error.message}`;
@@ -80,7 +96,8 @@ volumeControl.addEventListener('input', () => {
 
 echoControl.addEventListener('input', () => {
     const echo = echoControl.value / 100;
-    status.innerText = `Echo effect disabled.`;
+    delayNode.delayTime.value = echo;
+    echoPercentage.innerText = `${echoControl.value}%`;
 });
 
 recordButton.addEventListener('click', () => {
