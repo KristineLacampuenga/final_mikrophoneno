@@ -14,22 +14,19 @@ let audioUrl, audio;
 let recordingTimer, secondsElapsed = 0;
 
 const initializeMicrophone = async () => {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    audioContext = new (window.AudioContext || window.webkitAudioContext)({
+        latencyHint: 'interactive',
+    });
     gainNode = audioContext.createGain();
-    delayNode = audioContext.createDelay(5.0);
-    delayNode.delayTime.value = 0;
 
-    // High-pass filter to remove low-frequency noise
     const highPassFilter = audioContext.createBiquadFilter();
     highPassFilter.type = 'highpass';
     highPassFilter.frequency.value = 300;
 
-    // Low-pass filter to remove high-frequency noise
     const lowPassFilter = audioContext.createBiquadFilter();
     lowPassFilter.type = 'lowpass';
     lowPassFilter.frequency.value = 3000;
 
-    // Compressor for automatic gain control
     const compressor = audioContext.createDynamicsCompressor();
     compressor.threshold.setValueAtTime(-50, audioContext.currentTime);
     compressor.knee.setValueAtTime(40, audioContext.currentTime);
@@ -41,13 +38,11 @@ const initializeMicrophone = async () => {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         microphone = audioContext.createMediaStreamSource(stream);
 
-        // Connect audio nodes
         microphone
             .connect(highPassFilter)
             .connect(lowPassFilter)
             .connect(gainNode)
             .connect(compressor)
-            .connect(delayNode)
             .connect(audioContext.destination);
 
         mediaRecorder = new MediaRecorder(stream);
@@ -65,7 +60,7 @@ const initializeMicrophone = async () => {
             downloadLink.click();
         };
 
-        status.innerText = 'Microphone initialized with noise reduction!';
+        status.innerText = 'Microphone initialized with noise reduction and low latency!';
     } catch (error) {
         console.error('Error accessing microphone:', error);
         status.innerText = `Error accessing microphone: ${error.message}`;
@@ -96,7 +91,13 @@ volumeControl.addEventListener('input', () => {
 
 echoControl.addEventListener('input', () => {
     const echo = echoControl.value / 100;
-    delayNode.delayTime.value = echo;
+    if (delayNode) {
+        delayNode.delayTime.value = echo;
+    } else {
+        delayNode = audioContext.createDelay();
+        delayNode.delayTime.value = echo;
+        gainNode.connect(delayNode).connect(audioContext.destination);
+    }
     echoPercentage.innerText = `${echoControl.value}%`;
 });
 
@@ -126,6 +127,7 @@ recordButton.addEventListener('click', () => {
 playbackButton.addEventListener('click', () => {
     if (audio) {
         audio.play();
+        setAudioOutputToBluetooth(audio); // Set output to Bluetooth if available
         status.innerText = 'Playing back the recording...';
         playbackButton.style.backgroundColor = 'red';
         audio.onended = () => {
@@ -145,17 +147,21 @@ const formatTime = (seconds) => {
 };
 
 const setAudioOutputToBluetooth = async (audioElement) => {
-    try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const bluetoothDevice = devices.find(device => device.kind === 'audiooutput' && device.label.includes('Bluetooth'));
+    if (typeof audioElement.setSinkId !== 'undefined') {
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const bluetoothDevice = devices.find(device => device.kind === 'audiooutput' && device.label.includes('Bluetooth'));
 
-        if (bluetoothDevice) {
-            await audioElement.setSinkId(bluetoothDevice.deviceId);
-            console.log('Audio output set to Bluetooth:', bluetoothDevice);
-        } else {
-            console.log('No Bluetooth audio output found.');
+            if (bluetoothDevice) {
+                await audioElement.setSinkId(bluetoothDevice.deviceId);
+                console.log('Audio output set to Bluetooth:', bluetoothDevice);
+            } else {
+                console.log('No Bluetooth audio output found.');
+            }
+        } catch (error) {
+            console.error('Error setting audio output to Bluetooth:', error);
         }
-    } catch (error) {
-        console.error('Error setting audio output to Bluetooth:', error);
+    } else {
+        console.log('setSinkId is not supported in this browser.');
     }
 };
