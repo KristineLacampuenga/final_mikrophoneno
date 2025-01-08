@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Microphone Web App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <img src="assets/icon-1.png" alt="Icon" class="title-icon"> 
+        </h1>
+
+        <!-- Microphone Button -->
+        <button id="toggleButton" class="icon-btn">
+            <img src="assets/realmic3.png" alt="Microphone Icon" class="microphone-btn">
+        </button>
+
+        <!-- Status Text Below the Mic Button -->
+        <p id="status">OFF</p>
+     
+ <!-- Music Control Section -->
+ <div class="music-control">
+    <select 
+        id="audioDropdown" 
+        size="3" 
+        style="width: 100%; padding: 10px; font-size: 16px; overflow-y: auto;">
+        <option value="" disabled selected>Select a sound</option>
+        <option value="sounds/pupHymn.mp3">Imno ng PUP (The PUP Hymn)</option>
+        <option value="sounds/pupHymn_minusOne.mp3">PUP Hymn (minus one)</option>
+        <option value="sounds/hosting.mp3">September(For Hosting)</option>
+        <option value="sounds/apt.mp3">APT</option>
+        <option value="sounds/Valentines.mp3">Valentines</option>
+        <option value="sounds/prayer.mp3">Prayer</option>
+        <option value="sounds/medley.mp3">Karaoke Medley</option>
+        <option value="sounds/birthday.mp3">Birthday Greet</option>
+        <option value="sounds/clapping.mp3">Clapping</option>
+        <option value="sounds/entrance.mp3">Entrance</option>
+        <option value="sounds/entrance2.mp3">Entrance 2</option>
+        <option value="sounds/happy.mp3">Joke</option>
+        <option value="sounds/winner.mp3">Winner</option>   
+    </select>
+    <audio id="audioPlayer" controls style="width: 100%; margin-top: 20px;">
+        Your browser does not support the audio element.
+    </audio>
+</div>
+
+<script>
+    const audioDropdown = document.getElementById('audioDropdown');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    audioDropdown.addEventListener('change', function() {
+        const selectedSound = audioDropdown.value;
+        audioPlayer.src = selectedSound;
+        audioPlayer.play();
+    });
+</script>
+
+<br>
+        <!-- Buttons for Recording and Playback -->
+        <div class="control-btn">
+            <button id="recordButton">
+                <i class='fa fa-stop-circle' style='color:red'></i>
+                <span id="recordTimer">Start Recording</span>
+            </button>
+            <button id="playbackButton" disabled>
+                <i class="fa fa-step-backward" style="color:red"></i>
+                Playback Recording
+            </button>
+        </div>
+
+        <!-- Controls for Volume and Echo -->
+        <div class="controls">
+            <!-- Vertical Slider for Volume -->
+            <div class="control-group">
+                <label for="volumeControl">Volume</label>
+                <input type="range" id="volumeControl" min="0" max="100" value="0" orient="vertical">
+                <span id="volumePercentage">0%</span>
+            </div>
+
+            <!-- Vertical Slider for Echo -->
+            <div class="control-group">
+                <label for="echoControl">Echo</label>
+                <input type="range" id="echoControl" min="0" max="100" value="0" orient="vertical">
+                <span id="echoPercentage">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
