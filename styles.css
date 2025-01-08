@@ -29,23 +29,29 @@ body::before {
     background-color: rgba(249, 242, 213, 0.87);
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 15px; /* Reduced padding */
-    width: 300px; /* Smaller width */
+    padding: 22px;
+    width: 375px;
     max-width: 90%;
     border: 5px solid #876741;
     position: relative;
     z-index: 2;
+    overflow-y: auto; /* Make the container scrollable */
+    max-height: 90vh; /* Limit the container's height */
+}
+
+.container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
 }
 
 h1 {
-    font-size: 1.4em; /* Smaller font size */
-    margin-bottom: 10px; /* Reduced margin */
+    font-size: 1.7em;
+    margin-bottom: 15px;
     color: #ffffff;
 }
 
 .title-icon {
-    width: 60px; /* Smaller icon size */
-    height: 60px;
+    width: 75px;
+    height: 75px;
     margin-right: 10px;
     vertical-align: middle;
     border-radius: 50%;
@@ -62,25 +68,25 @@ h1 {
     justify-content: center;
     align-items: center;
     margin: 0 auto;
-    margin-bottom: 20px; /* Reduced bottom margin */
+    margin-bottom: 25px;
     padding: 0;
 }
 
 .microphone-btn {
-    width: 120px; /* Smaller button size */
+    width: 150px;
     height: auto;
 }
 
 .control-btn {
     display: flex;
     justify-content: center;
-    gap: 15px; /* Reduced gap */
-    margin-bottom: 15px; /* Reduced margin */
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
 button {
-    padding: 8px 14px; /* Smaller padding */
-    font-size: 0.9em; /* Smaller font size */
+    padding: 9px 16px;
+    font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s ease-in-out;
     background-color: #f0f0f0;
@@ -89,7 +95,7 @@ button {
     text-transform: uppercase;
     font-weight: bold;
     border-radius: 5px;
-    width: 130px; /* Smaller button width */
+    width: 140px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -116,23 +122,23 @@ button:hover:not(:disabled) {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 15px; /* Reduced gap */
-    margin-top: 15px; /* Reduced margin */
+    gap: 16px;
+    margin-top: 18px;
 }
 
 .control-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px; /* Reduced gap */
+    gap: 8px;
     flex: 1;
 }
 
 .control-group input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
-    width: 12px; /* Smaller width */
-    height: 150px; /* Reduced height */
+    width: 15px;
+    height: 180px;
     background: #ffffff;
     outline: none;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -143,8 +149,8 @@ button:hover:not(:disabled) {
 .control-group input[type="range"][orient="vertical"] {
     writing-mode: vertical-lr;
     direction: rtl;
-    height: 150px; /* Reduced height */
-    margin-bottom: 8px; /* Reduced margin */
+    height: 180px;
+    margin-bottom: 8px;
 }
 
 .control-group input[type="range"]:hover {
@@ -159,8 +165,8 @@ button:hover:not(:disabled) {
 .control-group input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 25px; /* Smaller thumb size */
-    height: 25px;
+    width: 30px;
+    height: 30px;
     background: #800000;
     border-radius: 50%;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
@@ -178,22 +184,22 @@ button:hover:not(:disabled) {
 }
 
 label {
-    font-size: 1em; /* Smaller font size */
-    margin-top: 8px; /* Reduced margin */
+    font-size: 1.1em;
+    margin-top: 8px;
     display: block;
     color: #070707;
 }
 
 #volumePercentage, #echoPercentage {
-    font-size: 0.9em; /* Smaller font size */
+    font-size: 1em;
     color: #070707;
     text-align: center;
 }
 
 #status {
-    font-size: 1em; /* Smaller font size */
-    margin-top: 8px; /* Reduced margin */
-    margin-bottom: 15px; /* Reduced margin */
+    font-size: 1.1em;
+    margin-top: 8px;
+    margin-bottom: 18px;
     text-align: center;
     color: #070707;
     font-weight: bold;
@@ -201,76 +207,76 @@ label {
 
 @media (max-width: 768px) {
     .container {
-        padding: 12px;
+        padding: 15px;
         width: 80%;
-        max-width: 350px; /* Adjusted width for smaller screens */
+        max-width: 350px;
     }
 
     h1 {
-        font-size: 1.3em;
+        font-size: 1.4em;
+    }
+
+    .microphone-btn {
+        width: 130px;
+    }
+
+    .control-btn {
+        flex-direction: row;
+        gap: 12px;
+    }
+
+    button {
+        width: auto;
+        padding: 7px 12px;
+    }
+
+    .controls {
+        width: 100%;
+        justify-content: space-evenly;
+    }
+
+    .control-group input[type="range"] {
+        width: 13%;
+        height: 4px;
+    }
+
+    .title-icon {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.2em;
+    }
+
+    .container {
+        padding: 10px;
     }
 
     .microphone-btn {
         width: 110px;
     }
 
-    .control-btn {
-        flex-direction: row;
-        gap: 10px;
-    }
-
     button {
-        width: auto;
+        width: 100%;
         padding: 6px 10px;
     }
 
     .controls {
-        width: 100%;
+        gap: 10px;
+        flex-direction: row;
         justify-content: space-evenly;
     }
 
     .control-group input[type="range"] {
-        width: 12%;
-        height: 4px;
+        width: 10%;
+        height: 2px;
     }
 
     .title-icon {
         width: 50px;
         height: 50px;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 1.1em;
-    }
-
-    .container {
-        padding: 8px;
-    }
-
-    .microphone-btn {
-        width: 90px;
-    }
-
-    button {
-        width: 100%;
-        padding: 5px 8px;
-    }
-
-    .controls {
-        gap: 6px;
-        flex-direction: row;
-        justify-content: space-evenly;
-    }
-
-    .control-group input[type="range"] {
-        width: 8%;
-        height: 2px;
-    }
-
-    .title-icon {
-        width: 40px;
-        height: 40px;
     }
 }
