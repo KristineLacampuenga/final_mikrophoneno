@@ -12,16 +12,11 @@
         <h1>
             <img src="assets/icon-1.png" alt="Icon" class="title-icon"> 
         </h1>
-
-        <!-- Microphone Button -->
         <button id="toggleButton" class="icon-btn">
             <img src="assets/realmic3.png" alt="Microphone Icon" class="microphone-btn">
         </button>
-
-        <!-- Status Text Below the Mic Button -->
         <p id="status">OFF</p>
      
- <!-- Music Control Section -->
  <div class="music-control">
     <select 
         id="audioDropdown" 
@@ -59,7 +54,6 @@
 </script>
 
 <br>
-        <!-- Buttons for Recording and Playback -->
         <div class="control-btn">
             <button id="recordButton">
                 <i class='fa fa-stop-circle' style='color:red'></i>
@@ -71,16 +65,13 @@
             </button>
         </div>
 
-        <!-- Controls for Volume and Echo -->
         <div class="controls">
-            <!-- Vertical Slider for Volume -->
             <div class="control-group">
                 <label for="volumeControl">Volume</label>
                 <input type="range" id="volumeControl" min="0" max="100" value="0" orient="vertical">
                 <span id="volumePercentage">0%</span>
             </div>
 
-            <!-- Vertical Slider for Echo -->
             <div class="control-group">
                 <label for="echoControl">Echo</label>
                 <input type="range" id="echoControl" min="0" max="100" value="0" orient="vertical">
