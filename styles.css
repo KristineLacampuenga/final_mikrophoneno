@@ -35,12 +35,12 @@ body::before {
     border: 5px solid #876741;
     position: relative;
     z-index: 2;
-    overflow-y: auto; /* Make the container scrollable */
-    max-height: 90vh; /* Limit the container's height */
+    overflow-y: auto; 
+    max-height: 90vh; 
 }
 
 .container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar */
+    display: none; 
 }
 
 h1 {
