@@ -127,7 +127,7 @@ recordButton.addEventListener('click', () => {
 playbackButton.addEventListener('click', () => {
     if (audio) {
         audio.play();
-        setAudioOutputToBluetooth(audio); // Set output to Bluetooth if available
+        setAudioOutputToBluetooth(audio); 
         status.innerText = 'Playing back the recording...';
         playbackButton.style.backgroundColor = 'red';
         audio.onended = () => {
